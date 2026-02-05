@@ -1,2 +1,1 @@
-# Boat-Object-Detection
-Code for boat object detection system
+Added starting code
