@@ -1,0 +1,20 @@
+# Python Virtual Environment
+.venv/
+
+# Training Data
+datasets/
+
+# YOLO Training Results
+runs/
+*.pt
+
+# IDE / Editor Settings
+.vscode/
+
+# Python Cache
+__pycache__/
+*.pyc
+
+# OS Files
+.DS_Store
+Thumbs.db
