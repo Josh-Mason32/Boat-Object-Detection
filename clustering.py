@@ -1,10 +1,12 @@
 import cv2
 import numpy as np
+import argparse
+import sys
+import os
 
 # -------------------------------
 # CONFIG
 # -------------------------------
-VIDEO_SOURCE = 0        # 0 = webcam, or path to video file
 FRAME_WIDTH = 640
 FRAME_HEIGHT = 384
 
@@ -16,11 +18,30 @@ LOWER_WATER = np.array([80, 20, 20])   # blue-green low sat
 UPPER_WATER = np.array([140, 255, 255])
 
 # -------------------------------
+# ARGUMENT PARSING
+# -------------------------------
+parser = argparse.ArgumentParser(description="Object detection on water via clustering.")
+parser.add_argument("source", nargs="?", default="0", help="Webcam index (e.g. 0) or path to video file.")
+args = parser.parse_args()
+
+# Try to convert source to int (for webcam); if it fails, treat as file path
+try:
+    source = int(args.source)
+except ValueError:
+    source = args.source
+    if not os.path.exists(source):
+        print(f"Error: Video file '{source}' not found.")
+        sys.exit(1)
+
+# -------------------------------
 # VIDEO SETUP
 # -------------------------------
-cap = cv2.VideoCapture(VIDEO_SOURCE)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_WIDTH)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT)
+cap = cv2.VideoCapture(source)
+
+# If it's a file, we might not want to force these settings (some files have fixed sizes)
+if isinstance(source, int):
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_WIDTH)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT)
 
 # Background subtractor
 fgbg = cv2.createBackgroundSubtractorMOG2(
