@@ -33,8 +33,8 @@ def nothing(x):
 # ARGUMENT PARSING
 # -----------------------------------------------------------------------------------------
 parser = argparse.ArgumentParser(description="Object detection on water via clustering.")
-parser.add_argument("source", nargs="?", default="IMG_1594.MOV", 
-                    help="Path to video file (default: IMG_1594.MOV) or webcam index.")
+parser.add_argument("source", nargs="?", default="boatsingle.mp4", 
+                    help="Path to video file (default: boatsingle.mp4) or webcam index.")
 args = parser.parse_args()
 
 # Determine if source is a webcam index (int) or a file path (str)
