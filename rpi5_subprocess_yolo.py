@@ -14,8 +14,9 @@ MIN_CONF_FOR_ALERT   = 0.15
 EXCLUDE_CATEGORIES   = ["static obstacle", "static objects", "sky", "water", "background"]
 MAX_BOX_AREA_RATIO   = 0.45
 MIDDLE_COLUMN_ONLY   = True
-MIDDLE_COLUMN_RATIO  = 0.20
+MIDDLE_COLUMN_RATIO  = 0.9
 ALERT_DURATION       = 5
+HEADLESS_MODE        = False # Set to True to run automatically on boot with no monitor needed
 
 def play_alert_sound():
     try:
@@ -26,10 +27,10 @@ def play_alert_sound():
 def main():
     print("[*] Starting Hardware Capture Subprocess...")
     
-    # We use libcamera-vid to completely bypass Python camera bugs.
+    # We use rpicam-vid to completely bypass Python camera bugs.
     # It runs natively on the Pi and streams raw video data to stdout.
     cmd = [
-        "libcamera-vid",
+        "rpicam-vid",
         "-t", "0",
         "--inline",
         "--width", "640",
@@ -61,6 +62,12 @@ def main():
 
     print("[+] System Ready! Displaying video prediction feed and recording.")
     print("[▶] Press 'q' in the window to quit.\n")
+
+    # Play two startup beeps in the background
+    try:
+        subprocess.Popen(["sh", "-c", f"aplay -q '{ALERT_SOUND_PATH}'; sleep 0.4; aplay -q '{ALERT_SOUND_PATH}'"])
+    except:
+        pass
 
     object_history = {}
     frame_area = None
@@ -182,10 +189,11 @@ def main():
 
             out_writer.write(annotated)
 
-            cv2.imshow("Video Prediction", annotated)
+            if not HEADLESS_MODE:
+                cv2.imshow("Video Prediction", annotated)
 
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
 
         except KeyboardInterrupt:
             break
